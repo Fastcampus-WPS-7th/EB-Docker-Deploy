@@ -21,11 +21,12 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
 SECRETS_BASE = os.path.join(SECRETS_DIR, 'base.json')
 SECRETS_LOCAL = os.path.join(SECRETS_DIR, 'local.json')
+SECRETS_DEV = os.path.join(SECRETS_DIR, 'dev.json')
 
 secrets = json.loads(open(SECRETS_BASE, 'rt').read())
 
 
-def set_config(obj, start=False):
+def set_config(obj, module_name=None, start=False):
     """
     Python객체를 받아, 해당 객체의 key-value쌍을
     현재 모듈(config.settings.base)에 동적으로 할당
@@ -65,7 +66,7 @@ def set_config(obj, start=False):
             # 없는 변수를 참조할 때 발생하는 예외
             return obj
         except Exception as e:
-            # print(f'Cannot eval object({obj}), Exception: {e}')
+            print(f'Cannot eval object({obj}), Exception: {e}')
             return obj
             # raise ValueError(f'Cannot eval object({obj}), Exception: {e}')
 
@@ -82,20 +83,21 @@ def set_config(obj, start=False):
                 obj[key] = eval_obj(value)
             # set_config()가 처음 호출된 loop에서만 setattr()을 실행
             if start:
-                setattr(sys.modules[__name__], key, value)
+                setattr(sys.modules[module_name], key, value)
     # 전달된 객체가 'list'형태일 경우
     elif isinstance(obj, list):
         # list아이템을 순회하며 
         for index, item in enumerate(obj):
             # list의 해당 index에 item을 평가한 값을 할당
-            obj[index] = eval(item)
+            obj[index] = eval_obj(item)
 
 
 # set_config에서 'raven'모듈을 필요로 하나, 이 모듈의 다른 부분에서 사용하지 않음
 # import raven이라고 쓸 경우 Code reformating에서 필요없는 import로 인식해서 지워짐
 # raven모듈을 importlib를 사용해 가져온 후 현재 모듈에 'raven'이라는 이름으로 할당
 setattr(sys.modules[__name__], 'raven', importlib.import_module('raven'))
-set_config(secrets, start=True)
+set_config(secrets, module_name=__name__, start=True)
+print(getattr(sys.modules[__name__], 'RAVEN_CONFIG'))
 
 # Static
 STATIC_URL = '/static/'
