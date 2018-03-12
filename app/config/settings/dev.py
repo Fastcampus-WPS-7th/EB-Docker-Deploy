@@ -10,16 +10,23 @@
 #   5.1. ENV를 사용해 환경변수 설정
 #   5.2. docker build에서 migrate 및 createsu제외
 # 6. docker build eb-docker:dev
+
+# Bucket생성
+# storage.py에 적절히 스토리지 생성
+# 사용설정
+# collectstatic
+# 완-성
 from .base import *
 
 secrets = json.loads(open(SECRETS_DEV, 'rt').read())
+set_config(secrets, module_name=__name__, start=True)
 
 DEBUG = True
 ALLOWED_HOSTS = []
 WSGI_APPLICATION = 'config.wsgi.dev.application'
 INSTALLED_APPS += [
     'django_extensions',
+    'storages',
 ]
-
-set_config(secrets, module_name=__name__, start=True)
-print(getattr(sys.modules[__name__], 'DATABASES'))
+STATICFILES_STORAGE = 'config.storage.StaticFilesStorage'
+DEFAULT_FILE_STORAGE = 'config.storage.DefaultFileStorage'
