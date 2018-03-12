@@ -16,7 +16,7 @@ secrets = json.loads(open(SECRETS_DEV, 'rt').read())
 
 DEBUG = True
 ALLOWED_HOSTS = []
-WSGI_APPLICATION = 'config.wsgi.local.application'
+WSGI_APPLICATION = 'config.wsgi.dev.application'
 INSTALLED_APPS += [
     'django_extensions',
 ]
