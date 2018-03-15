@@ -13,5 +13,6 @@ WSGI_APPLICATION = 'config.wsgi.production.application'
 INSTALLED_APPS += [
     'storages',
 ]
-STATICFILES_STORAGE = 'config.storage.StaticFilesStorage'
+# S3대신 EC2에서 정적파일을 제공 (프리티어의 Put사용량 절감)
+# STATICFILES_STORAGE = 'config.storage.StaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'config.storage.DefaultFileStorage'
